@@ -14,7 +14,7 @@
 ## 7. **Enemies**
   ### 7.1. **Enemy ideas**
     The Canines
-    Bear, just bear, maybe a bit rotting or something idk
+    Bear, just a bear, maybe a bit rotting or something idk, maybe a polar bear
     Corpses of the frostbitten
     Other survivors / Madmen / Psychos
     Nuclear abomination
