@@ -1,4 +1,4 @@
-### **General plan**
+# **General plan**
 ## **1. World gen**
 
 ## 2. **Add player stat handling**
