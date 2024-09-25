@@ -1,4 +1,6 @@
-1. World gen
+
+###**General plan**
+##**1. World gen**
 2. Stats
 3. Inventory / Items
 4. BASE GAMEPLAY LOOP
@@ -8,4 +10,3 @@
 8. Hunting
 9. Blizzard particle systems
 10. Crafting structures,
-11. 
