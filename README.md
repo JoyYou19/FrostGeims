@@ -1,5 +1,5 @@
 # **General plan**
-## **1. World gen**
+## **1. World generation**
 
 ## 2. **Add player stat handling**
 
@@ -12,7 +12,15 @@
 ## 6. **Day/Night/Temperature**
 
 ## 7. **Enemies**
-
+  ### 7.1. **Enemy ideas**
+    The Canines
+    Bear, just bear, maybe a bit rotting or something idk
+    Corpses of the frostbitten
+    Other survivors / Madmen / Psychos
+    Nuclear abomination
+    Arctic fox
+    The Ashed / Pompei got the reboot card type shit
+    ...
 ## 8. **Hunting**
 
 ## 9. **Blizzard particle systems**
