@@ -18,7 +18,7 @@ void main()
     float grey = dot(base_col, vec3(0.299, 0.587, 0.114));
 
     // Darkness factor for overlay
-    float darkness = 0.06;
+    float darkness = 0.02;
 
     // Contrast value for the base color
     float contrast = 1.1;

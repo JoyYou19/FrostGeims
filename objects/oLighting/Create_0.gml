@@ -13,7 +13,7 @@ srf_pong        = -1;
 _color = c_white;//make_color_rgb(0, 0, 10);
 
 // Global settings
-global.bloom = 13;
+global.bloom = 1;
 depth = -300;
 
 // SHADER INITIALIZATION
@@ -43,7 +43,7 @@ u_bloom_texture    = shader_get_sampler_index(shader_bloom_blend, "bloom_texture
 // ----------------------------------------
 // Default bloom settings
 bloom_threshold = 0.0;    // Bloom threshold (controls what brightness is affected)
-bloom_range     = 0;      // Bloom range (controls the spread of bloom effect)
+bloom_range     = 0.0;      // Bloom range (controls the spread of bloom effect)
 blur_steps      = global.bloom;  // Number of blur steps based on bloom intensity
 
 // Blending settings for bloom effect

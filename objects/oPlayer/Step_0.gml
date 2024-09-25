@@ -17,3 +17,15 @@ if(global.client_id == player_id){
 		send_movement_packet();
 	}
 }
+
+var _bullet_collision = instance_place(x,y,oBullet);
+with(_bullet_collision){
+	if(bullet_id == global.client_id){
+		if(other.player_id !=global.client_id){
+			deal_damage(other.player_id,10);
+			instance_destroy();
+		}
+	} else {
+		instance_destroy();
+	}
+}

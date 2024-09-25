@@ -15,6 +15,9 @@ function handle_network_packet(_packet_type, _packet){
 		break;
 		
 		case NETWORK.STARTGAME:
+			var _seed = buffer_read(_packet,buffer_u32);
+			global.seed = _seed;
+			start_game();
 			global.game_started = true;
 		break;
 	}
@@ -38,8 +41,6 @@ function handle_data_packet(_packet){
 	// Get the data action
 	var _action_type = buffer_read(_packet, buffer_u8);
 	
-	show_debug_message("Data packet received");
-	
 	switch(_action_type){
 		// The movement sync
 		case ACTION.MOVE:
@@ -53,10 +54,51 @@ function handle_data_packet(_packet){
 			var _player_instance = ds_map_find_value(instances,_player_id);
 			if(!is_undefined(_player_instance)){
 				if(instance_exists(_player_instance)){
-					_player_instance.x = _x;
-					_player_instance.y = _y;
+					if(_player_instance.x < _x){
+						_player_instance.sprite_index = sPlayerWalk
+						_player_instance.image_xscale = 1;
+					}
+					if(_player_instance.x > _x){
+						_player_instance.sprite_index = sPlayerWalk;
+						_player_instance.image_xscale = -1;
+					}
+					_player_instance.x = lerp(_player_instance.x,_x,0.5);
+					_player_instance.y = lerp(_player_instance.y,_y,0.5);
 				}
 			}
+		break;
+		
+		case ACTION.HEALTH_UPDATE:
+			var _player_id = buffer_read(_packet,buffer_u16);
+			var _player_health = buffer_read(_packet,buffer_f32);
+			// Debug output to check if values are correct
+			show_debug_message("Health Update: Player ID=" + string(_player_id) + ", New Health=" + string(_player_health));
+
+			// Now, update the player's health in the game (you would have a system to find and update the player instance)
+			var _player_instance = ds_map_find_value(instances, _player_id);
+			if (!is_undefined(_player_instance)) {
+				if (instance_exists(_player_instance)) {
+					_player_instance.healthpoints = _player_health; // Update the player's health
+				}
+			}
+		break;
+		
+		case ACTION.SHOOT:
+		    // Read bullet data from the packet
+    var bullet_id = buffer_read(_packet, buffer_u16);       // Bullet unique ID
+    var shooter_id = buffer_read(_packet, buffer_u16);      // Client ID of the shooter
+    var bullet_x = buffer_read(_packet, buffer_u16);        // X position
+    var bullet_y = buffer_read(_packet, buffer_u16);        // Y position
+    var bullet_direction = buffer_read(_packet, buffer_u16); // Direction
+    var bullet_speed = buffer_read(_packet, buffer_u16);    // Speed
+
+    // Create a new bullet object in the game world
+    var bullet_instance = instance_create_depth(bullet_x, bullet_y, 0, oBullet);
+    bullet_instance.direction = bullet_direction;
+    bullet_instance.speed = bullet_speed;
+    bullet_instance.bullet_id = shooter_id;  // Assign unique bullet ID
+
+    show_debug_message("Bullet fired by Player ID: " + string(shooter_id));
 		break;
 	}
 }
@@ -95,6 +137,7 @@ function handle_connect_packet(_packet){
 			
 			if(_player_id == global.client_id){
 				oCamera.obj_follow = _new_player;
+				global.client_player = _new_player;
 			}
 			
 			// Player gets added to the instances

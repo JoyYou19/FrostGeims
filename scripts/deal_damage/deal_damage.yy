@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"deal_damage",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"deal_damage",
+  "parent":{
+    "name":"Network",
+    "path":"folders/Scripts/Network.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

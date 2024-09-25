@@ -10,6 +10,9 @@ if(instance_exists(obj_follow)){
 
 	targetX = real_x-camera_w/2;
 	targetY = real_y-camera_h/2;
+	
+	targetX = clamp(targetX,0,120*80);
+	targetY = clamp(targetY,0,120*80);
 }
 
 camera_x = lerp(camera_x, targetX, CAM_SMOOTH);

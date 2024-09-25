@@ -7,8 +7,6 @@ switch(async_load[? "type"]){
 		
 		var _packet_type = buffer_read(_packet, buffer_u8);
 		
-		show_debug_message("Data packet received");
-		
 		handle_network_packet(_packet_type, _packet);
 	break;
 	

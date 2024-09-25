@@ -1,5 +1,7 @@
 player_id = 0;
 player_name = "";
+healthpoints = 100;
+image_speed = 0.4;
 
 function send_movement_packet(){
 	// Create a buffer to send a movement packet

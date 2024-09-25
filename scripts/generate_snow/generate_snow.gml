@@ -3,6 +3,9 @@ function generate_snow(_width, _height, _grid_size, _tileset, _seed){
 	static start_x = 1000;
 	static start_y = 1000;
 	
+	tilemap_set_width(_tileset,_width);
+	tilemap_set_height(_tileset,_height);
+	
 	for(var i = 0; i < _width; i++){
 		var _ypos = start_y;
 		for(var j = 0; j < _height; j++){

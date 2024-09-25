@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"math/rand"
 	"net"
 	"time"
 )
@@ -69,21 +70,98 @@ func processTCPPacket(conn *net.TCPConn, data []byte) {
 		handleDisconnect(conn)
 	case STARTGAME:
 		startGame(conn)
+	case DATA:
+		handleTCPDataPacket(conn, data[1:])
 
 	default:
 		fmt.Println("Unknown TCP packet type received")
 	}
 }
 
-// Notify all clients that the game has started
+// Handle in-game data sent via TCP (e.g., damage, stats updates)
+func handleTCPDataPacket(conn *net.TCPConn, data []byte) {
+	// Read the action type (second byte in the packet)
+	actionType := int(data[0])
+
+	switch actionType {
+	case ACTION_DAMAGE:
+		handleDamageAction(conn, data[1:]) // Handle damage action
+		fmt.Println("Processing damage action...")
+	case ACTION_SHOOT:
+		handleShootPacket(conn, data[1:])
+
+	// Add more actions like movement, stats, etc.
+	default:
+		fmt.Println("Unknown TCP action type received")
+	}
+}
+
+// Handle damage action sent via TCP
+func handleDamageAction(conn *net.TCPConn, data []byte) {
+	// Read the player ID (2 bytes)
+	playerID := binary.LittleEndian.Uint16(data[0:2])
+
+	// Read the damage amount (2 bytes)
+	damageAmount := binary.LittleEndian.Uint16(data[2:4])
+
+	fmt.Printf("Player %d takes %d damage.\n", playerID, damageAmount)
+
+	// Apply damage logic, such as reducing health and notifying other clients
+	applyDamage(playerID, damageAmount)
+}
+
+// Function to apply damage to a player
+func applyDamage(playerID uint16, damageAmount uint16) {
+	// Find the player by playerID and reduce their health
+	for _, client := range clients {
+		if client.ID == playerID {
+			client.Stats.Health -= float32(damageAmount)
+			fmt.Printf("Player %d now has %.2f health remaining.\n", playerID, client.Stats.Health)
+
+			// Send updated health to all other clients (if necessary)
+			notifyHealthUpdate(client)
+			break
+		}
+	}
+}
+
+// Notify all clients about updated health of a player
+func notifyHealthUpdate(client *Client) {
+	var buffer bytes.Buffer
+	buffer.WriteByte(DATA)                 // Packet type
+	buffer.WriteByte(ACTION_HEALTH_UPDATE) // Action type for health update
+
+	// Write the player's ID and new health value
+	binary.Write(&buffer, binary.LittleEndian, client.ID)
+	binary.Write(&buffer, binary.LittleEndian, client.Stats.Health)
+
+	// Send the updated health to all connected clients
+	for _, otherClient := range clients {
+		_, err := otherClient.TCPConn.Write(buffer.Bytes())
+		if err != nil {
+			fmt.Println("Error sending health update to client:", err)
+		}
+	}
+}
+
+// Notify all clients that the game has started and send a random seed
 func startGame(conn *net.TCPConn) {
 	fmt.Println("Received start game packet from client")
 
-	// Broadcast the STARTGAME notification to all clients
+	// Generate a random seed based on the current time
+	rand.Seed(time.Now().UnixNano()) // Seed the random number generator
+	seed := rand.Uint32()            // Generate a random seed (32-bit integer)
+
+	fmt.Printf("Generated seed: %d\n", seed)
+
+	// Broadcast the STARTGAME notification along with the seed to all clients
 	for _, client := range clients {
-		// Send the STARTGAME packet to each client
+		// Create a buffer to send the STARTGAME packet and seed
 		var buffer bytes.Buffer
 		buffer.WriteByte(STARTGAME) // Write the STARTGAME packet type
+
+		// Write the generated seed to the buffer (send as a 32-bit unsigned integer)
+		binary.Write(&buffer, binary.LittleEndian, seed)
 
 		// Send the packet via TCP to the client
 		_, err := client.TCPConn.Write(buffer.Bytes())
@@ -92,7 +170,51 @@ func startGame(conn *net.TCPConn) {
 		}
 	}
 
-	fmt.Println("Notified all clients that the game has started")
+	fmt.Println("Notified all clients that the game has started with seed:", seed)
+}
+
+// Handle shooting action from the client
+func handleShootPacket(conn *net.TCPConn, data []byte) {
+	var bulletID uint16
+	var clientID uint16
+	var x uint16
+	var y uint16
+	var direction uint16
+	var speed uint16
+
+	// Read bullet data from the packet (skip bullet storage)
+	bulletID = binary.LittleEndian.Uint16(data[0:2])   // Bullet unique ID
+	clientID = binary.LittleEndian.Uint16(data[2:4])   // Player's client ID
+	x = binary.LittleEndian.Uint16(data[4:6])          // X position
+	y = binary.LittleEndian.Uint16(data[6:8])          // Y position
+	direction = binary.LittleEndian.Uint16(data[8:10]) // Direction of the bullet
+	speed = binary.LittleEndian.Uint16(data[10:12])    // Speed
+
+	// Broadcast the shot event to all clients
+	broadcastShoot(clientID, bulletID, x, y, direction, speed)
+}
+
+// Broadcast the shooting event to all other players
+func broadcastShoot(clientID, bulletID, x, y, direction, speed uint16) {
+	var buffer bytes.Buffer
+	buffer.WriteByte(DATA)         // Packet type: DATA
+	buffer.WriteByte(ACTION_SHOOT) // Action type: SHOOT
+
+	// Write bullet data
+	binary.Write(&buffer, binary.LittleEndian, bulletID)
+	binary.Write(&buffer, binary.LittleEndian, clientID)
+	binary.Write(&buffer, binary.LittleEndian, x)
+	binary.Write(&buffer, binary.LittleEndian, y)
+	binary.Write(&buffer, binary.LittleEndian, direction)
+	binary.Write(&buffer, binary.LittleEndian, speed)
+
+	// Send the packet to all clients
+	for _, client := range clients {
+		_, err := client.TCPConn.Write(buffer.Bytes())
+		if err != nil {
+			fmt.Println("Error broadcasting shoot event to client:", err)
+		}
+	}
 }
 
 // Handle new client connection via TCP

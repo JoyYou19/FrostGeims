@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"start_game",
   "parent":{
-    "name":"Network",
-    "path":"folders/Scripts/Network.yy",
+    "name":"WorldGen",
+    "path":"folders/Scripts/WorldGen.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

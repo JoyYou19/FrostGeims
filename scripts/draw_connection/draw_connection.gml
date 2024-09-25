@@ -13,10 +13,15 @@ if(global.client_id != -1){
 	draw_set_font(fTemp);
 	draw_set_halign(fa_center);
 	draw_text(RES_W/2,RES_H/2,"Play");
+	var _separation = 0;
+	with(oPlayer){
+		draw_text(100+_separation,200,player_name);
+		_separation += 100;
+	}
 
 	if(point_in_rectangle(device_mouse_x_to_gui(0), device_mouse_y_to_gui(0), RES_W/2-100,RES_H/2-50,RES_W/2+100,RES_H/2+50)){
 		if(mouse_check_button_pressed(mb_left)){
-			start_game(tcp_client);
+			send_start_game_packet(tcp_client);
 		}
 	}
 	

@@ -16,6 +16,9 @@ const (
 
 const (
 	ACTION_MOVE = iota
+	ACTION_DAMAGE
+	ACTION_HEALTH_UPDATE
+	ACTION_SHOOT
 )
 
 type Client struct {

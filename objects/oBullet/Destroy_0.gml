@@ -1,0 +1,1 @@
+part_emitter_destroy(oParticle.light_particle_system,particle_emitter);
