@@ -1,6 +1,5 @@
-
-###**General plan**
-##**1. World gen**
+### **General plan**
+## **1. World gen**
 2. Stats
 3. Inventory / Items
 4. BASE GAMEPLAY LOOP
