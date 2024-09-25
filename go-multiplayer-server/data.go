@@ -35,7 +35,6 @@ func handleMoveAction(addr *net.UDPAddr, conn *net.UDPConn, data []byte) {
 
 		// Broadcast the updated position to all other clients
 		broadcastPlayerMovement(conn, clientID, x, y)
-		fmt.Println("Sending client movement")
 	} else {
 		fmt.Println("Client not found for ID:", clientID)
 	}

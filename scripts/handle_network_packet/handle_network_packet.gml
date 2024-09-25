@@ -13,6 +13,10 @@ function handle_network_packet(_packet_type, _packet){
 		case NETWORK.DISCONNECT:
 			handle_disconnect_packet(_packet);
 		break;
+		
+		case NETWORK.STARTGAME:
+			global.game_started = true;
+		break;
 	}
 }
 

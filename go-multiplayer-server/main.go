@@ -11,6 +11,7 @@ const (
 	CONNECT = iota
 	DATA
 	DISCONNECT
+	STARTGAME
 )
 
 const (

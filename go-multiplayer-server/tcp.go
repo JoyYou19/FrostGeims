@@ -67,9 +67,32 @@ func processTCPPacket(conn *net.TCPConn, data []byte) {
 	case DISCONNECT:
 		// Handle disconnection via TCP
 		handleDisconnect(conn)
+	case STARTGAME:
+		startGame(conn)
+
 	default:
 		fmt.Println("Unknown TCP packet type received")
 	}
+}
+
+// Notify all clients that the game has started
+func startGame(conn *net.TCPConn) {
+	fmt.Println("Received start game packet from client")
+
+	// Broadcast the STARTGAME notification to all clients
+	for _, client := range clients {
+		// Send the STARTGAME packet to each client
+		var buffer bytes.Buffer
+		buffer.WriteByte(STARTGAME) // Write the STARTGAME packet type
+
+		// Send the packet via TCP to the client
+		_, err := client.TCPConn.Write(buffer.Bytes())
+		if err != nil {
+			fmt.Println("Error sending start game packet to client:", err)
+		}
+	}
+
+	fmt.Println("Notified all clients that the game has started")
 }
 
 // Handle new client connection via TCP
@@ -89,8 +112,7 @@ func handleConnect(conn *net.TCPConn, data []byte) {
 		TCPConn:  conn,
 		LastSeen: time.Now(),
 		Stats: Stats{
-			Health: 100.0,
-			// Handle the disconnection logic here
+			Health:      100.0,
 			Stamina:     100.0,
 			Sleep:       100.0,
 			Water:       100.0,

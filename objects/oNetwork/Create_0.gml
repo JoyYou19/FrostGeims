@@ -16,6 +16,7 @@ enum NETWORK{
 	CONNECT,
 	DATA,
 	DISCONNECT,
+	STARTGAME,
 }
 
 // Specifies the action of the DATA packet being sent
@@ -25,7 +26,7 @@ enum ACTION{
 
 player_name = string(irandom(10000));
 
-connect_to_server(tcp_client,server_ip,tcp_server_port);
+global.game_started = false; // The flag that determines if the game has been started by the client
 
 // COPY THE GAME STRING TO RUN A SEPARATE COPY OF IT
 clipboard_set_text( parameter_string( 0 ) + " -game \"" + parameter_string( 2 ) + "\"" );
